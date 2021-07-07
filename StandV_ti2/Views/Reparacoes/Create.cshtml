@@ -1,0 +1,52 @@
+﻿@model StandV_ti2.Models.Reparacoes
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Reparação</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TipoAvaria" class="control-label"></label>
+                <select asp-for="TipoAvaria" class="form-control">
+                    <option value="0">Por favor, escolha qual o tipo de reparação.</option>
+                    <option value="1">Mecânico</option>
+                    <option value="2">Pintura</option>
+                    <option value="3">Bate-Chapas</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdVeiculo" class="control-label"></label>
+                <select asp-for="IdVeiculo" class="form-control" asp-items="ViewBag.idVeiculo">
+                    <option value="0">Por favor, escolha o seu veículo registado.</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataRepar" class="control-label"></label>
+                <input asp-for="DataRepar" class="form-control" />
+                <span asp-validation-for="DataRepar" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descricao" class="control-label"></label>
+                @*<input asp-for="DataRepar" class="form-control" />*@
+                <textarea asp-for="Descricao" class="form-control" rows="5" cols="33" />Breve descrição</textarea>
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enviar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar para a Lista de Reparações</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

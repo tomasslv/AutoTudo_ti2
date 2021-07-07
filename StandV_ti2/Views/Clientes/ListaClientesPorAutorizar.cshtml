@@ -1,0 +1,62 @@
+﻿@model IEnumerable<StandV_ti2.Models.Clientes>
+
+@{
+    ViewData["Title"] = "Lista de Criadores não autorizados";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+
+<form asp-action="ListaClientesPorAutorizar" method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nome)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Morada)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CodPostal)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Telemovel)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" value="@item.UserName" name="utilizadores" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nome)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Morada)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CodPostal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Telemovel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Atualizar os dados dos Criadores" class="btn btn-primary" />
+    </div>
+</form>

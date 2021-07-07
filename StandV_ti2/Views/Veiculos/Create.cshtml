@@ -1,0 +1,74 @@
+﻿@model StandV_ti2.Models.Veiculos
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Veículo</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Marca" class="control-label"></label>
+                <input asp-for="Marca" class="form-control" />
+                <span asp-validation-for="Marca" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Modelo" class="control-label"></label>
+                <input asp-for="Modelo" class="form-control" />
+                <span asp-validation-for="Modelo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnoVeiculo" class="control-label"></label>
+                <input asp-for="AnoVeiculo" class="form-control" />
+                <span asp-validation-for="AnoVeiculo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Combustivel" class="control-label"></label>
+                <input asp-for="Combustivel" class="form-control" />
+                <span asp-validation-for="Combustivel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Matricula" class="control-label"></label>
+                <input asp-for="Matricula" class="form-control" />
+                <span asp-validation-for="Matricula" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Potencia" class="control-label"></label>
+                <input asp-for="Potencia" class="form-control" />
+                <span asp-validation-for="Potencia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cilindrada" class="control-label"></label>
+                <input asp-for="Cilindrada" class="form-control" />
+                <span asp-validation-for="Cilindrada" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Km" class="control-label"></label>
+                <input asp-for="Km" class="form-control" />
+                <span asp-validation-for="Km" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoConducao" class="control-label"></label>
+                <select asp-for="TipoConducao" class="form-control">
+                    <option value="0">Por favor, escolha qual o tipo de condução do seu veículo.</option>
+                    <option value="1">Automático</option>
+                    <option value="2">Manual</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Criar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar para a Lista dos Veículos</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,58 @@
+﻿@model IEnumerable<StandV_ti2.Models.Reparacoes>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Lista de Reparações</h1>
+
+<p>
+    <a asp-action="Create">Criar Pedido de Reparação</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Veiculo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoAvaria)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataRepar)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Veiculo.Marca)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoAvaria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataRepar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.IdReparacao">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdReparacao">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
