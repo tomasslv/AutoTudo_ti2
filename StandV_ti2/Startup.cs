@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using StandV_ti2.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +23,33 @@ namespace StandV_ti2
             Configuration = configuration;
         }
 
+        private static void CreateDefaultAdmin(RoleManager<IdentityRole> roleManager,UserManager<ApplicationUser> userManager)
+        {
+            // www.binaryintellect.net/articles/5e180dfa-4438-45d8-ac78-c7cc11735791.aspx
+
+            //adding admin role and default user
+            var roleCheck =  roleManager.RoleExistsAsync("Admin").Result;
+            if (!roleCheck)
+            {
+                 roleManager.CreateAsync(new IdentityRole("Admin")).Wait();
+            }
+            if (userManager.FindByNameAsync("admin@gmail.com").Result == null)
+            {
+                var adminDefault = new ApplicationUser
+                {
+                    UserName = "admin@gmail.com",
+                    Email = "admin@gmail.com",
+                    EmailConfirmed = true
+                };
+
+                var adminResult = userManager.CreateAsync(adminDefault, "Admin123.").Result;
+                if (adminResult.Succeeded)
+                {
+                     userManager.AddToRoleAsync(adminDefault, "Admin").Wait();
+                }
+            }
+        }
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -32,15 +60,22 @@ namespace StandV_ti2
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-.                 AddRoles<IdentityRole>() // ativa a utilização de Roles
-.                 AddEntityFrameworkStores<ReparacaoDB>();
+                    .AddRoles<IdentityRole>() // ativa a utilização de Roles
+                    .AddEntityFrameworkStores<ReparacaoDB>();
+
             services.AddControllersWithViews();
             //services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
+            RoleManager<IdentityRole> roleManager,
+            UserManager<ApplicationUser> userManager
+            )
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -60,6 +95,9 @@ namespace StandV_ti2
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // criar o utilizador Admin que será o primeiro utilizador da App
+            CreateDefaultAdmin(roleManager, userManager);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -67,6 +105,10 @@ namespace StandV_ti2
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+
+         
+
         }
     }
 }
