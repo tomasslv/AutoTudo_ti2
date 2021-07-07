@@ -23,16 +23,15 @@ namespace StandV_ti2
             Configuration = configuration;
         }
 
-        private async Task CreateRoles(IServiceProvider serviceProvider)
+        private static void CreateDefaultAdmin(RoleManager<IdentityRole> roleManager,UserManager<ApplicationUser> userManager)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            // www.binaryintellect.net/articles/5e180dfa-4438-45d8-ac78-c7cc11735791.aspx
 
             //adding admin role and default user
-            var roleCheck = await roleManager.RoleExistsAsync("Admin");
+            var roleCheck =  roleManager.RoleExistsAsync("Admin").Result;
             if (!roleCheck)
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                 roleManager.CreateAsync(new IdentityRole("Admin")).Wait();
             }
             if (userManager.FindByNameAsync("admin@gmail.com").Result == null)
             {
@@ -43,14 +42,12 @@ namespace StandV_ti2
                     EmailConfirmed = true
                 };
 
-                var adminResult = userManager.CreateAsync(adminDefault, "Admin123.");
-                if (adminResult.IsCompletedSuccessfully)
+                var adminResult = userManager.CreateAsync(adminDefault, "Admin123.").Result;
+                if (adminResult.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminDefault, "Admin");
+                     userManager.AddToRoleAsync(adminDefault, "Admin").Wait();
                 }
             }
-
-
         }
 
         public IConfiguration Configuration { get; }
@@ -63,15 +60,22 @@ namespace StandV_ti2
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-.                 AddRoles<IdentityRole>() // ativa a utilização de Roles
-.                 AddEntityFrameworkStores<ReparacaoDB>();
+                    .AddRoles<IdentityRole>() // ativa a utilização de Roles
+                    .AddEntityFrameworkStores<ReparacaoDB>();
+
             services.AddControllersWithViews();
             //services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
+            RoleManager<IdentityRole> roleManager,
+            UserManager<ApplicationUser> userManager
+            )
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -90,9 +94,9 @@ namespace StandV_ti2
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
 
-
+            // criar o utilizador Admin que será o primeiro utilizador da App
+            CreateDefaultAdmin(roleManager, userManager);
 
             app.UseEndpoints(endpoints =>
             {
@@ -101,6 +105,10 @@ namespace StandV_ti2
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+
+         
+
         }
     }
 }
