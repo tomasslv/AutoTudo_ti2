@@ -33,6 +33,11 @@ namespace StandV_ti2
             {
                  roleManager.CreateAsync(new IdentityRole("Admin")).Wait();
             }
+            var roleCheck2 = roleManager.RoleExistsAsync("Cliente").Result;
+            if (!roleCheck2)
+            {
+                roleManager.CreateAsync(new IdentityRole("Cliente")).Wait();
+            }
             if (userManager.FindByNameAsync("admin@gmail.com").Result == null)
             {
                 var adminDefault = new ApplicationUser
