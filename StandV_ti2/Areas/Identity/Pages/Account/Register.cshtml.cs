@@ -136,7 +136,7 @@ namespace StandV_ti2.Areas.Identity.Pages.Account {
                Email = Input.Email,    // email do utilizador
                EmailConfirmed = false, // o email não está formalmente confirmado
                LockoutEnabled = true,  // o utilizador pode ser bloqueado
-               LockoutEnd = new DateTime(DateTime.Now.Day + 1, 1, 1),  // data em que termina o bloqueio,
+               LockoutEnd = new DateTime(DateTime.Now.Day, 1, 1),  // data em que termina o bloqueio,
                                                                          // se não for anulado antes
                DataRegisto = DateTime.Now // data do registo
             };

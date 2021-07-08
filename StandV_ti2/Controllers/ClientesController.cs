@@ -94,13 +94,13 @@ namespace StandV_ti2.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = "Gestor")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ListaClientesPorAutorizar()
         {
 
             // quais os Clientes ainda não autorizados a aceder ao Sistema?
-            // lista com os utilizadores bloqueados
-            var listaDeUtilizadores = _userManager.Users.Where(u => u.LockoutEnd > DateTime.Now);
+            // lista os utilizadores bloqueados
+            var listaDeUtilizadores = _userManager.Users.Where(u => u.LockoutEnd <= DateTime.Now.AddDays(-10));
             // lista com os dados dos Clientes
             var listaClientes = _context.Clientes
                                          .Where(c => listaDeUtilizadores.Select(u => u.Id)
@@ -109,7 +109,7 @@ namespace StandV_ti2.Controllers
              * SELECT c.*
              * FROM Clientes c, Users u
              * WHERE c.UserName = u. Id AND
-             *       u.LockoutEnd > Data Atual          * 
+             *       u.LockoutEnd > Data Atual 
              */
 
             // Enviar os dados para a View
@@ -123,13 +123,13 @@ namespace StandV_ti2.Controllers
         /// <param name="utilizadores">lista desses utilizadores</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Gestor")]
+        [Authorize(Roles = "Admin")]
         /*
-         [Authorize(Roles = "Gestor")]  -->  só permite que pessoas com esta permissão entrem
+         [Authorize(Roles = "Admin")]  -->  só permite que pessoas com esta permissão entrem
 
-         [Authorize(Roles = "Gestor,Cliente")]  --> permite acesso a pessoas com uma das duas roles
+         [Authorize(Roles = "Admin,Cliente")]  --> permite acesso a pessoas com uma das duas roles
 
-         [Authorize(Roles = "Gestor")]     -->
+         [Authorize(Roles = "Admin")]     -->
          [Authorize(Roles = "Cliente")]    -->  Neste caso, a pessoa tem de pertencer aos dois roles
         */
         public async Task<IActionResult> ListaClientesPorAutorizar(string[] utilizadores)
@@ -147,7 +147,7 @@ namespace StandV_ti2.Controllers
                         // procurar o 'utilizador' na tabela dos Users
                         var user = await _userManager.FindByIdAsync(u);
                         // desbloquear o utilizador
-                        await _userManager.SetLockoutEndDateAsync(user, DateTime.Now.AddDays(-1));
+                        await _userManager.SetLockoutEndDateAsync(user, DateTime.Now);
                         // como não se pediu ao User para validar o seu email
                         // é preciso aqui validar esse email
                         string codigo = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -164,7 +164,7 @@ namespace StandV_ti2.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("ListaClientesPorAutorizar");
         }
 
 
