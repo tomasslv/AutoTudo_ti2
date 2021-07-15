@@ -159,7 +159,7 @@ namespace StandV_ti2.Areas.Identity.Pages.Account {
                                                   // a quando da escreita dos dados na interface
                                                   // exatamente a mesma tarefa feita na linha 128
 
-               Input.Cliente.UserName = user.Id;
+                    Input.Cliente.UserName = user.Id;
 
                // estamos em condições de guardar os dados na BD
                try {

@@ -87,8 +87,11 @@
             <h5 class="u-text u-text-grey-40 u-text-1">OS NOSSOS SERVIÇOS</h5>
             <h1 class="u-text u-text-2">Como podemos ajudar ?</h1>
             <p class="u-text u-text-3">Auto-Tudo é uma oficina especializada na área da mecânica, pintura e bate-chapas!&nbsp;</p>
-            <p class="u-text u-text-3">Faça já o seu pedido!&nbsp;</p>
-            <a href="Reparacoes/Create" class="u-border-1 u-border-palette-2-base u-btn u-btn-round u-button-style u-palette-2-base u-radius-3 u-btn-1">FAZER PEDIDO</a>
+            
+            @if (User.IsInRole("Cliente")) {
+                <p class="u-text u-text-3">Faça já o seu pedido!&nbsp;</p>
+                <a href="Reparacoes/Create" class="u-border-1 u-border-palette-2-base u-btn u-btn-round u-button-style u-palette-2-base u-radius-3 u-btn-1">FAZER PEDIDO</a>
+            }
         </div>
     </section>
     <section class="u-align-center u-clearfix u-section-3" id="carousel_8423">
@@ -292,7 +295,10 @@
                             <div class="u-layout-row">
                                 <div class="u-align-center-sm u-align-center-xs u-align-right-lg u-align-right-md u-align-right-xl u-container-style u-layout-cell u-left-cell u-size-30 u-layout-cell-2">
                                     <div class="u-container-layout u-valign-middle u-container-layout-2">
-                                        <a href="Reparacoes/Create" class="u-border-1 u-border-palette-2-base u-btn u-btn-round u-button-style u-palette-2-base u-radius-3 u-btn-1">FAZER PEDIDO</a>
+                                        @if (User.IsInRole("Cliente"))
+                                        {
+                                            <a href="Reparacoes/Create" class="u-border-1 u-border-palette-2-base u-btn u-btn-round u-button-style u-palette-2-base u-radius-3 u-btn-1">FAZER PEDIDO</a>
+                                        }
                                     </div>
                                 </div>
                                 <div class="u-align-center-sm u-align-center-xs u-align-left-lg u-align-left-md u-align-left-xl u-container-style u-layout-cell u-right-cell u-size-30 u-layout-cell-3">
