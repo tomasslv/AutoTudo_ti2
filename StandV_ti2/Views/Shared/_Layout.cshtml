@@ -29,6 +29,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Clientes" asp-action="ListaClientesPorAutorizar">Clientes por Autorizar</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reparacoes" asp-action="Index">Lista de Reparações</a>
+                            </li>
                         }
                         @if (User.IsInRole("Cliente"))
                         {
@@ -39,7 +42,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Reparacoes" asp-action="Index">As minhas Reparações</a>
                             </li>
                         }
-                        </ul>
+                    </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>

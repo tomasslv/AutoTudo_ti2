@@ -38,8 +38,20 @@ namespace StandV_ti2.Controllers
         // GET: Veiculos
         public async Task<IActionResult> Index()
         {
-            var reparacaoDB = _context.Veiculos.Include(v => v.Cliente);
-            return View(await reparacaoDB.ToListAsync());
+            //var reparacaoDB = _context.Veiculos.Include(v => v.Cliente);
+            //return View(await reparacaoDB.ToListAsync());
+
+            // var. auxiliar
+            string idDaPessoaAutenticada = _userManager.GetUserId(User);
+
+            var veiculos = await (from v in _context.Veiculos.Include(v => v.Cliente)
+                                  join c in _context.Clientes on v.IdCliente equals c.IdCliente
+                                  join u in _context.Users on c.Email equals u.Email
+                                  where u.Id == idDaPessoaAutenticada
+                                  select v)
+                                  .ToListAsync();
+
+            return View(veiculos);
         }
 
         // GET: Veiculos/Details/5
@@ -110,13 +122,16 @@ namespace StandV_ti2.Controllers
                 return NotFound();
             }
 
-            var veiculos = await _context.Veiculos.FindAsync(id);
-            if (veiculos == null)
+            // e, o ID fornecido pertence a um Veículo que pertence ao Utilizador que está a usar o sistema?
+            int idClienteAutenticado = (await _context.Clientes.Where(c => c.UserName == _userManager.GetUserId(User)).FirstOrDefaultAsync()).IdCliente;
+
+            var veiculo = await _context.Veiculos.Where(v => v.IdVeiculo == id && v.IdCliente == idClienteAutenticado).FirstOrDefaultAsync();
+            if (veiculo == null)
             {
                 return NotFound();
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nome", veiculos.IdCliente);
-            return View(veiculos);
+
+            return View(veiculo);
         }
 
         // POST: Veiculos/Edit/5
@@ -124,38 +139,29 @@ namespace StandV_ti2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdVeiculo,Marca,Modelo,AnoVeiculo,Combustivel,Matricula,Potencia,Cilindrada,Km,TipoConducao,IdCliente")] Veiculos veiculos)
+        public async Task<IActionResult> Edit(int id, [Bind("IdVeiculo,Marca,Modelo,AnoVeiculo,Combustivel,Matricula,Potencia,Cilindrada,Km,TipoConducao,IdCliente")] Veiculos veiculo)
         {
-            if (id != veiculos.IdVeiculo)
+            if (id != veiculo.IdVeiculo)
             {
                 return NotFound();
             }
 
-            // recuperar o ID do objeto enviado para o browser
-            var numIdVeiculo = HttpContext.Session.GetInt32("NumVeiculoEmEdicao");
+            // recuperar o ID do utilizador (cliente) que está autenticado
+            // e reassociar esse ID ao Veículo
+            int idClienteAutenticado = (await _context.Clientes.Where(c => c.UserName == _userManager.GetUserId(User)).FirstOrDefaultAsync()).IdCliente;
+            veiculo.IdCliente = idClienteAutenticado;
 
-            // e compará-lo com o ID recebido
-            // se forem iguais, continuamos
-            // se forem diferentes, não fazemos a alteração
-
-            if (numIdVeiculo == null || numIdVeiculo != veiculos.IdVeiculo)
-            {
-                // se entro aqui, é pq houve problemas
-
-                // redirecionar para a página de início
-                return RedirectToAction("Index");
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(veiculos);
+                    _context.Update(veiculo);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VeiculosExists(veiculos.IdVeiculo))
+                    if (!VeiculosExists(veiculo.IdVeiculo))
                     {
                         return NotFound();
                     }
@@ -166,8 +172,7 @@ namespace StandV_ti2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nome", veiculos.IdCliente);
-            return View(veiculos);
+            return View(veiculo);
         }
 
         // GET: Veiculos/Delete/5
