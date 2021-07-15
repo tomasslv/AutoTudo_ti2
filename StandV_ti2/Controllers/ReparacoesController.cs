@@ -104,8 +104,31 @@ namespace StandV_ti2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdReparacao,IdVeiculo,TipoAvaria,DataRepar,Descricao,Estado")] Reparacoes reparacao)
+        public async Task<IActionResult> Create([Bind("IdReparacao,IdVeiculo,TipoAvaria,DataRepar,Descricao,Estado")] Reparacoes reparacao/*, int[] ReparacoesEscolhidas*/)
         {
+            //// avalia se o array com os tipos de avaria escolhidos associadas à reparação está vazio ou não
+            //if (ReparacoesEscolhidas.Length == 0)
+            //{
+            //    //É gerada uma mensagem de erro
+            //    ModelState.AddModelError("", "É necessário selecionar pelo menos um tipo de reparação.");
+            //    // gerar a lista Funcionarios que podem ser associadas à reparação
+            //    // ViewBag.ListaFuncionarios = _context.Funcionarios.OrderBy(f => f.Nome).ToList();
+            //    // devolver controlo à View
+            //    return View(reparacao);
+            //}
+
+            //// criar uma lista com os objetos escolhidos das Reparações
+            //List<Reparacoes> ListaReparacoes = new List<Reparacoes>();
+            //// Para cada objeto escolhido..
+            //foreach (int item in ReparacoesEscolhidas)
+            //{
+            //    // adicionar à lista
+            //    ListaReparacoes.Add(item);
+            //}
+
+            //// adicionar a lista ao objeto de reparação
+            //reparacao.ListaReparacoes = ReparacoesEscolhidas;
+
             if (ModelState.IsValid)
             {
 
@@ -113,6 +136,7 @@ namespace StandV_ti2.Controllers
                 //Veiculos veiculo = _context.Veiculos.Where(v => v.IdVeiculo == _context.Veiculos).FirstOrDefault();
                 // adicionar o veículo à reparação
                 //reparacoes.Veiculo = veiculo;
+                reparacao.Estado = "Em reparação";
 
                 _context.Add(reparacao);
                 await _context.SaveChangesAsync();
@@ -130,7 +154,11 @@ namespace StandV_ti2.Controllers
                 return NotFound();
             }
 
-            var reparacoes = await _context.Reparacoes.FindAsync(id);
+            var reparacoes = await _context.Reparacoes
+                .Where(r => r.IdReparacao == id)
+                .Include(r => r.FuncionariosEnvolvidosNaReparacao)
+                .FirstOrDefaultAsync();
+
             if (reparacoes == null)
             {
                 return NotFound();
@@ -151,98 +179,72 @@ namespace StandV_ti2.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("IdReparacao,IdVeiculo,TipoAvaria,DataRepar,Descricao,Estado")] Reparacoes newReparacao, int[] FuncionariosEscolhidos)
         {
 
-            // recuperar o ID da reparação do utilizador (cliente) que está autenticado ??????????????????
-            newReparacao = await _context.Reparacoes.FindAsync(id);
-
             if (id != newReparacao.IdReparacao)
             {
                 return NotFound();
             }
 
-            
+            // dados anteriormente guardados da Reparação
+            var reparacao = await _context.Reparacoes.Where(r => r.IdReparacao == id).Include(r => r.FuncionariosEnvolvidosNaReparacao).FirstOrDefaultAsync();
 
             //**************************************************************************************************************************
 
             // avalia se o array com a lista de funcionários escolhidos associadas à reparação está vazio ou não
-            if (FuncionariosEscolhidos.Length == 0)
+            //if (FuncionariosEscolhidos.Length == 0)
+            //{
+            //    //É gerada uma mensagem de erro
+            //    ModelState.AddModelError("", "É necessário selecionar pelo menos um funcionário.");
+            //    // gerar a lista Funcionarios que podem ser associadas à reparação
+            //    ViewBag.ListaFuncionarios = _context.Funcionarios.OrderBy(f => f.Nome).ToList();
+
+            //    // devolver controlo à View
+            //    return View(newReparacao);
+            //}
+
+            //else
+            //{
+
+
+            //**************************************************************************************************************************
+
+            // obter a lista dos IDs dos Funcionários associadas às Reparações, antes da edição
+            var oldListaFuncionarios = reparacao.FuncionariosEnvolvidosNaReparacao
+                                           .Select(f => f.IdFuncionario)
+                                           .ToList();
+
+            // avaliar se o utilizador alterou alguma Funcionário associada à Reparação
+            // adicionados -> lista de funcionários adicionados
+            // retirados   -> lista de funcionários retirados
+            var adicionados = FuncionariosEscolhidos.Except(oldListaFuncionarios);
+
+            var retirados = oldListaFuncionarios.Except(FuncionariosEscolhidos.ToList());
+
+            // se algum Funcionário foi adicionado ou retirado
+            // é necessário alterar a lista de funcionário 
+            // associada à Reparação
+            if (adicionados.Any() || retirados.Any())
             {
-                //É gerada uma mensagem de erro
-                ModelState.AddModelError("", "É necessário selecionar pelo menos um funcionário.");
-                // gerar a lista Funcionarios que podem ser associadas à reparação
-                ViewBag.ListaFuncionarios = _context.Funcionarios.OrderBy(f => f.Nome).ToList();
-                
 
-                // criar uma lista com os objetos escolhidos dos Funcionários
-                List<Funcionarios> ListaFuncionariosEscolhidos = new List<Funcionarios>();
-                // Para cada objeto escolhido..
-                foreach (int item in FuncionariosEscolhidos)
+                if (retirados.Any())
                 {
-                    // procurar o Funcionário
-                    Funcionarios funcionario = _context.Funcionarios.Find(item);
-                    // adicionar o Funcionário à lista
-                    ListaFuncionariosEscolhidos.Add(funcionario);
-                }
-
-                // adicionar a lista ao objeto de reparação
-                newReparacao.FuncionariosEnvolvidosNaReparacao = ListaFuncionariosEscolhidos;
-                
-                // devolver controlo à View
-                return View(newReparacao);
-            }
-
-            else
-            {
-
-
-                //**************************************************************************************************************************
-
-                // dados anteriormente guardados da Reparação
-                var reparacao = await _context.Reparacoes.Where(r => r.IdReparacao == id).Include(r => r.FuncionariosEnvolvidosNaReparacao).FirstOrDefaultAsync();
-
-                // obter a lista dos IDs dos Funcionários associadas às Reparações, antes da edição
-                var oldListaFuncionarios = reparacao.FuncionariosEnvolvidosNaReparacao
-                                               .Select(f => f.IdFuncionario)
-                                               .ToList();
-
-                // avaliar se o utilizador alterou alguma Funcionário associada à Reparação
-                // adicionados -> lista de funcionários adicionados
-                // retirados   -> lista de funcionários retirados
-                var adicionados = FuncionariosEscolhidos.Except(oldListaFuncionarios);
-
-                //// se a lista de funcionários não tiver vazia...
-                //if (FuncionariosEscolhidos.Length != 0)
-                //{
-                //    var retirados = oldListaFuncionarios.Except(FuncionariosEscolhidos.ToList());
-                //}
-
-                var retirados = oldListaFuncionarios.Except(FuncionariosEscolhidos.ToList());
-
-                // se algum Funcionário foi adicionado ou retirado
-                // é necessário alterar a lista de funcionário 
-                // associada à Reparação
-                if (adicionados.Any() || retirados.Any())
-                {
-
-                    if (retirados.Any())
+                    // retirar o Funcionário 
+                    foreach (int oldFuncionario in retirados)
                     {
-                        // retirar o Funcionário 
-                        foreach (int oldFuncionario in retirados)
-                        {
-                            var funcionarioARemover = reparacao.FuncionariosEnvolvidosNaReparacao.FirstOrDefault(f => f.IdFuncionario == oldFuncionario);
-                            reparacao.FuncionariosEnvolvidosNaReparacao.Remove(funcionarioARemover);
-                        }
+                        var funcionarioARemover = reparacao.FuncionariosEnvolvidosNaReparacao.FirstOrDefault(f => f.IdFuncionario == oldFuncionario);
+                        reparacao.FuncionariosEnvolvidosNaReparacao.Remove(funcionarioARemover);
                     }
-                    if (adicionados.Any())
+                }
+                if (adicionados.Any())
+                {
+                    // adicionar o Funcionário 
+                    foreach (int newFuncionario in adicionados)
                     {
-                        // adicionar o Funcionário 
-                        foreach (int newFuncionario in adicionados)
-                        {
-                            var FuncionarioAdd = await _context.Funcionarios.FirstOrDefaultAsync(f => f.IdFuncionario == newFuncionario);
-                            reparacao.FuncionariosEnvolvidosNaReparacao.Add(FuncionarioAdd);
-                        }
+                        var FuncionarioAdd = await _context.Funcionarios.FirstOrDefaultAsync(f => f.IdFuncionario == newFuncionario);
+                        reparacao.FuncionariosEnvolvidosNaReparacao.Add(FuncionarioAdd);
                     }
                 }
             }
+            //}
 
             //**************************************************************************************************************************
 
@@ -250,12 +252,19 @@ namespace StandV_ti2.Controllers
             {
                 try
                 {
-                    _context.Update(newReparacao);
+
+                    /* a EF só permite a manipulação de um único objeto de um mesmo tipo
+                  *  por esse motivo, como estamos a usar o objeto 'lesson'
+                  *  temos de o atualizar com os dados que vêm da View
+                  */
+                    reparacao.Estado = newReparacao.Estado;
+
+                    _context.Update(reparacao);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReparacoesExists(newReparacao.IdReparacao))
+                    if (!ReparacoesExists(reparacao.IdReparacao))
                     {
                         return NotFound();
                     }
@@ -266,8 +275,8 @@ namespace StandV_ti2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdVeiculo"] = new SelectList(_context.Veiculos, "IdVeiculo", "Marca", newReparacao.IdVeiculo);
-            return View(newReparacao);
+            ViewData["IdVeiculo"] = new SelectList(_context.Veiculos, "IdVeiculo", "Marca", reparacao.IdVeiculo);
+            return View(reparacao);
         }
 
         // GET: Reparacoes/Delete/5
@@ -307,3 +316,23 @@ namespace StandV_ti2.Controllers
     }
 }
 
+//*************************************************************************************************************************
+
+
+
+
+
+
+//// criar uma lista com os objetos escolhidos dos Funcionários
+//List<Funcionarios> ListaFuncionariosEscolhidos = new List<Funcionarios>();
+//// Para cada objeto escolhido..
+//foreach (int item in FuncionariosEscolhidos)
+//{
+//    // procurar o Funcionário
+//    Funcionarios funcionario = _context.Funcionarios.Find(item);
+//    // adicionar o Funcionário à lista
+//    ListaFuncionariosEscolhidos.Add(funcionario);
+//}
+
+//// adicionar a lista ao objeto de reparação
+//newReparacao.FuncionariosEnvolvidosNaReparacao = ListaFuncionariosEscolhidos;

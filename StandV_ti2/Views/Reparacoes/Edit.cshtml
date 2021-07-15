@@ -13,6 +13,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="IdReparacao" type="hidden" />
             <div class="form-group">
                 <label asp-for="TipoAvaria" class="control-label"></label>
                 <select asp-for="TipoAvaria" class="form-control">
@@ -22,11 +23,11 @@
                     <option value="Bate-Chapas">Bate-Chapas</option>
                 </select>
                 @*<input type="checkbox" id="repar1" name="repar1" value="Mecânico">
-            <label asp-for="TipoAvaria">Mecânico</label><br>
-            <input type="checkbox" id="repar2" name="repar2" value="Pintura">
-            <label asp-for="TipoAvaria">Pintura</label><br>
-            <input type="checkbox" id="repar3" name="repar3" value="Bate-Chapas">
-            <label asp-for="TipoAvaria">Bate-Chapas</label><br>*@
+                    <label asp-for="TipoAvaria">Mecânico</label><br>
+                    <input type="checkbox" id="repar2" name="repar2" value="Pintura">
+                    <label asp-for="TipoAvaria">Pintura</label><br>
+                    <input type="checkbox" id="repar3" name="repar3" value="Bate-Chapas">
+                    <label asp-for="TipoAvaria">Bate-Chapas</label><br>*@
             </div>
             <div class="form-group">
                 <label asp-for="IdVeiculo" class="control-label"></label>
@@ -49,21 +50,30 @@
                 <label asp-for="Estado" class="control-label"></label>
                 @if (User.IsInRole("Admin"))
                 {
-                    <input asp-for="Estado" class="form-control" />
+                    <select asp-for="Estado" class="form-control">
+                        <option value="Em reparação">Em reparação</option>
+                        <option value="Concluído">Concluído</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
                 }
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            @if (User.IsInRole("Admin")) { 
-            <div class="form-group">
-                <label class="control-label">Funcionários</label>
-                @foreach (Funcionarios item in ViewBag.ListaDeFuncionarios)
+                else
                 {
-                    if (Model.FuncionariosEnvolvidosNaReparacao.Contains(item)) { selecionado = "checked"; }
-
-
-                    <br /> <input type="checkbox" value="@item.IdFuncionario" name="FuncionariosEscolhidos" @selecionado/> @item.Nome
+                    <span class="form-control">@Model.Estado</span>
                 }
             </div>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="form-group">
+                    <label class="control-label">Funcionários</label>
+                    @foreach (Funcionarios item in ViewBag.ListaDeFuncionarios)
+                    {
+                        if (Model.FuncionariosEnvolvidosNaReparacao.Contains(item)) { selecionado = "checked"; }
+
+
+                        <br /> <input type="checkbox" value="@item.IdFuncionario" name="FuncionariosEscolhidos" @selecionado /> <span>@item.Nome - @item.Cargo</span>
+                        selecionado = "";
+                    }
+                </div>
             }
             <div class="form-group">
                 <input type="submit" value="Enviar" class="btn btn-primary" />
