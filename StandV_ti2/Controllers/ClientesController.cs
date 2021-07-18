@@ -77,15 +77,15 @@ namespace StandV_ti2.Controllers
         //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("IdCliente,Nome,Morada,CodPostal,Telemovel,Email, NIF")] Clientes clientes)
+        //public async Task<IActionResult> Create([Bind("IdCliente,Nome,Morada,CodPostal,Telemovel,Email, NIF")] Clientes cliente)
         //{
         //    if (ModelState.IsValid)
         //    {
-        //        _context.Add(criadores);
+        //        _context.Add(cliente);
         //        await _context.SaveChangesAsync();
         //        return RedirectToAction(nameof(Index));
         //    }
-        //    return View(clientes);
+        //    return View(cliente);
         //}
 
 
@@ -189,9 +189,9 @@ namespace StandV_ti2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,Nome,Morada,CodPostal,Telemovel,Email, NIF")] Clientes clientes)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,Nome,Morada,CodPostal,Telemovel,Email, NIF")] Clientes cliente)
         {
-            if (id != clientes.IdCliente)
+            if (id != cliente.IdCliente)
             {
                 return NotFound();
             }
@@ -200,12 +200,12 @@ namespace StandV_ti2.Controllers
             {
                 try
                 {
-                    _context.Update(clientes);
+                    _context.Update(cliente);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClientesExists(clientes.IdCliente))
+                    if (!ClientesExists(cliente.IdCliente))
                     {
                         return NotFound();
                     }
@@ -216,7 +216,7 @@ namespace StandV_ti2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(clientes);
+            return View(cliente);
         }
 
         // GET: Clientes/Delete/5

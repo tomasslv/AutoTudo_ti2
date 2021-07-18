@@ -72,7 +72,7 @@ namespace StandV_ti2.Models
         /// Tipo de condução do Veículo (automatico/manual)
         /// </summary>
         [Display(Name = "Tipo de Caixa de Velocidades do Veículo")]
-        public int TipoConducao { get; set; }
+        public string TipoConducao { get; set; }
 
         //********************************************************************************
 

@@ -88,7 +88,7 @@ namespace StandV_ti2.Controllers
         }
 
         // GET: Reparacoes/Create
-        //[Authorize(Roles ="Cliente")]
+        [Authorize(Roles ="Cliente")]
         public async Task<IActionResult> CreateAsync()
         {
 
@@ -104,38 +104,11 @@ namespace StandV_ti2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdReparacao,IdVeiculo,TipoAvaria,DataRepar,Descricao,Estado")] Reparacoes reparacao/*, int[] ReparacoesEscolhidas*/)
+        public async Task<IActionResult> Create([Bind("IdReparacao,IdVeiculo,TipoAvaria,DataRepar,Descricao,Estado")] Reparacoes reparacao)
         {
-            //// avalia se o array com os tipos de avaria escolhidos associadas à reparação está vazio ou não
-            //if (ReparacoesEscolhidas.Length == 0)
-            //{
-            //    //É gerada uma mensagem de erro
-            //    ModelState.AddModelError("", "É necessário selecionar pelo menos um tipo de reparação.");
-            //    // gerar a lista Funcionarios que podem ser associadas à reparação
-            //    // ViewBag.ListaFuncionarios = _context.Funcionarios.OrderBy(f => f.Nome).ToList();
-            //    // devolver controlo à View
-            //    return View(reparacao);
-            //}
-
-            //// criar uma lista com os objetos escolhidos das Reparações
-            //List<Reparacoes> ListaReparacoes = new List<Reparacoes>();
-            //// Para cada objeto escolhido..
-            //foreach (int item in ReparacoesEscolhidas)
-            //{
-            //    // adicionar à lista
-            //    ListaReparacoes.Add(item);
-            //}
-
-            //// adicionar a lista ao objeto de reparação
-            //reparacao.ListaReparacoes = ReparacoesEscolhidas;
-
+            
             if (ModelState.IsValid)
             {
-
-                // obter os veículos registados
-                //Veiculos veiculo = _context.Veiculos.Where(v => v.IdVeiculo == _context.Veiculos).FirstOrDefault();
-                // adicionar o veículo à reparação
-                //reparacoes.Veiculo = veiculo;
                 reparacao.Estado = "Em reparação";
 
                 _context.Add(reparacao);
@@ -175,7 +148,7 @@ namespace StandV_ti2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("IdReparacao,IdVeiculo,TipoAvaria,DataRepar,Descricao,Estado")] Reparacoes newReparacao, int[] FuncionariosEscolhidos)
         {
 
@@ -186,24 +159,6 @@ namespace StandV_ti2.Controllers
 
             // dados anteriormente guardados da Reparação
             var reparacao = await _context.Reparacoes.Where(r => r.IdReparacao == id).Include(r => r.FuncionariosEnvolvidosNaReparacao).FirstOrDefaultAsync();
-
-            //**************************************************************************************************************************
-
-            // avalia se o array com a lista de funcionários escolhidos associadas à reparação está vazio ou não
-            //if (FuncionariosEscolhidos.Length == 0)
-            //{
-            //    //É gerada uma mensagem de erro
-            //    ModelState.AddModelError("", "É necessário selecionar pelo menos um funcionário.");
-            //    // gerar a lista Funcionarios que podem ser associadas à reparação
-            //    ViewBag.ListaFuncionarios = _context.Funcionarios.OrderBy(f => f.Nome).ToList();
-
-            //    // devolver controlo à View
-            //    return View(newReparacao);
-            //}
-
-            //else
-            //{
-
 
             //**************************************************************************************************************************
 
@@ -315,24 +270,3 @@ namespace StandV_ti2.Controllers
         }
     }
 }
-
-//*************************************************************************************************************************
-
-
-
-
-
-
-//// criar uma lista com os objetos escolhidos dos Funcionários
-//List<Funcionarios> ListaFuncionariosEscolhidos = new List<Funcionarios>();
-//// Para cada objeto escolhido..
-//foreach (int item in FuncionariosEscolhidos)
-//{
-//    // procurar o Funcionário
-//    Funcionarios funcionario = _context.Funcionarios.Find(item);
-//    // adicionar o Funcionário à lista
-//    ListaFuncionariosEscolhidos.Add(funcionario);
-//}
-
-//// adicionar a lista ao objeto de reparação
-//newReparacao.FuncionariosEnvolvidosNaReparacao = ListaFuncionariosEscolhidos;

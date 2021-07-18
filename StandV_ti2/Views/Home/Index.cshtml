@@ -88,7 +88,7 @@
             <h1 class="u-text u-text-2">Como podemos ajudar ?</h1>
             <p class="u-text u-text-3">Auto-Tudo é uma oficina especializada na área da mecânica, pintura e bate-chapas!&nbsp;</p>
             
-            @if (User.IsInRole("Cliente")) {
+            @if (!User.IsInRole("Admin")) {
                 <p class="u-text u-text-3">Faça já o seu pedido!&nbsp;</p>
                 <a href="Reparacoes/Create" class="u-border-1 u-border-palette-2-base u-btn u-btn-round u-button-style u-palette-2-base u-radius-3 u-btn-1">FAZER PEDIDO</a>
             }
@@ -295,7 +295,7 @@
                             <div class="u-layout-row">
                                 <div class="u-align-center-sm u-align-center-xs u-align-right-lg u-align-right-md u-align-right-xl u-container-style u-layout-cell u-left-cell u-size-30 u-layout-cell-2">
                                     <div class="u-container-layout u-valign-middle u-container-layout-2">
-                                        @if (User.IsInRole("Cliente"))
+                                        @if (!User.IsInRole("Admin"))
                                         {
                                             <a href="Reparacoes/Create" class="u-border-1 u-border-palette-2-base u-btn u-btn-round u-button-style u-palette-2-base u-radius-3 u-btn-1">FAZER PEDIDO</a>
                                         }
