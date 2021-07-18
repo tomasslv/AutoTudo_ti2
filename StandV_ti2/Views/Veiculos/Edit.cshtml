@@ -30,8 +30,13 @@
             </div>
             <div class="form-group">
                 <label asp-for="Combustivel" class="control-label"></label>
-                <input asp-for="Combustivel" class="form-control" />
-                <span asp-validation-for="Combustivel" class="text-danger"></span>
+                <select asp-for="Combustivel" class="form-control">
+                    <option value="0">Por favor, escolha qual o tipo de combustível.</option>
+                    <option value="Gasolina">Gasolina</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Elétrico">Elétrico</option>
+                    <option value="Outro">Outro</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Matricula" class="control-label"></label>
@@ -55,8 +60,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="TipoConducao" class="control-label"></label>
-                <input asp-for="TipoConducao" class="form-control" />
-                <span asp-validation-for="TipoConducao" class="text-danger"></span>
+                <select asp-for="TipoConducao" class="form-control">
+                    <option value="0">Por favor, escolha qual o tipo de condução do seu veículo.</option>
+                    <option value="Automático">Automático</option>
+                    <option value="Manual">Manual</option>
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
